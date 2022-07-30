@@ -29,7 +29,7 @@ namespace graph_manager {
 GraphManager::GraphManager(eprosima::fastdds::dds::DomainId_t domain_id)
     : domain_id_(domain_id)
     , graph_changed_(false)
-    , display_on_change_(false)
+    , display_on_change_(true)
     , mtx_()
     , cv_()
     , graphCache_()
