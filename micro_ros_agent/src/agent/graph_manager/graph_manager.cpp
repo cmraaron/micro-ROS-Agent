@@ -26,6 +26,15 @@ namespace uros {
 namespace agent {
 namespace graph_manager {
 
+std::string prepend_namespace(std::string ns, std::string topic)
+{
+    return topic.size() > 3 && topic.at(0) == 'r' && topic.at(2) == '/'
+        ? topic.substr(0, 2) + ns + "/" + topic.substr(3, topic.size())
+        : topic;
+}
+
+
+
 GraphManager::GraphManager(eprosima::fastdds::dds::DomainId_t domain_id, std::string namespace_remapping)
     : domain_id_(domain_id)
     , namespace_remapping_(namespace_remapping)
@@ -361,9 +370,7 @@ void GraphManager::add_datawriter(
     const std::string& topic_name = datawriter->get_topic()->get_name();
     const std::string& type_name = datawriter->get_topic()->get_type_name();
 
-    auto remapped_topic_name = namespace_remapping_ + "/" + topic_name;
-
-    this->add_datawriter(datawriter_guid, remapped_topic_name, type_name,
+    this->add_datawriter(datawriter_guid, topic_name, type_name,
         participant->guid(), datawriter->get_qos());
 }
 
@@ -380,9 +387,7 @@ void GraphManager::add_datawriter(
         "rmw_fastrtps_cpp", participant_guid);
     const rmw_qos_profile_t qos_profile = fastdds_qos_to_rmw_qos(writer_qos);
 
-     auto remapped_topic_name = namespace_remapping_ + "/" + topic_name;
-
-    graphCache_.add_entity(datawriter_gid, remapped_topic_name,
+    graphCache_.add_entity(datawriter_gid, prepend_namespace(namespace_remapping_, topic_name),
         type_name, participant_gid, qos_profile, false);
 }
 
@@ -419,7 +424,7 @@ void GraphManager::add_datareader(
         "rmw_fastrtps_cpp", participant_guid);
     const rmw_qos_profile_t qos_profile = fastdds_qos_to_rmw_qos(reader_qos);
 
-    graphCache_.add_entity(datareader_gid, topic_name,
+    graphCache_.add_entity(datareader_gid, prepend_namespace(namespace_remapping_, topic_name),
         type_name, participant_gid, qos_profile, true);
 }
 
