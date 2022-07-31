@@ -44,7 +44,7 @@ bool Agent::create(
         }
     }
 
-    if (result)
+    if (false)
     {
         /**
          * Add CREATE_PARTICIPANT callback.
